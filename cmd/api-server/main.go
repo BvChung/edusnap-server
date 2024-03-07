@@ -24,8 +24,9 @@ func main() {
 	mux.Handle("GET /image", http.HandlerFunc(handlers.ImageHandler))
 	mux.Handle("GET /student", http.HandlerFunc(handlers.StudentHandler))
 
-	mux.Handle("GET /login", http.HandlerFunc(handlers.CountWrapper(handlers.UserHandler)))
 	mux.Handle("POST /login", http.HandlerFunc(handlers.LoginHandler))
+
+	mux.Handle("POST /register", http.HandlerFunc(handlers.RegisterHandler))
 
 	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")

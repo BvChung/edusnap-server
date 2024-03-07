@@ -9,16 +9,15 @@ import (
 
 func CreateClient() (*supabase.Client, error) {
 	url := os.Getenv("SUPABASE_URL")
+	key := os.Getenv("SUPABASE_KEY")
+
 	if url == "" {
 		return nil, fmt.Errorf("supabase url required")
 	}
 
-	key := os.Getenv("SUPABASE_KEY")
 	if key == "" {
 		return nil, fmt.Errorf("supabase api key required")
 	}
 
-	client := supabase.CreateClient(url, key)
-
-	return client, nil
+	return supabase.CreateClient(url, key), nil
 }
