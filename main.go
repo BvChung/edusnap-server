@@ -1,27 +1,39 @@
 package main
 
 import (
-	"fmt"
+	supabase "github.com/nedpals/supabase-go"
+    "fmt"
+    "context"
+	"log"
 	"net/http"
-	u "github.com/ocr/user"
+
+	user "github.com/ocr/api/user"
 )
 
 func main() {
-	fmt.Println("Server live at port 8080")
+	fmt.Println("Server listening on Port 8080. Live at http://localhost:8080")
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello 🐳🐳")
+	mux.Handle("GET /login", http.HandlerFunc(user.CountWrapper(user.UserHandler)))
+	mux.Handle("POST /login", http.HandlerFunc(user.LoginHandler))
+
+	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		search := r.URL.Query().Get("search")
+		fmt.Println(search)
+		fmt.Fprintf(w, "Parameter: %s", id)
 	})
 
-	mux.Handle("GET /login", http.HandlerFunc(u.HandleLogin))
-
 	// mux.HandleFunc("POST /login", func(w http.ResponseWriter, r *http.Request) {
-	// 	fmt.Fprintf(w, "Login user")
+	//      fmt.Fprintf(w, "Login user")
 	// })
 
-	err := http.ListenAndServe("localhost:8080", mux)
-	if err != nil {
-		fmt.Println(err.Error())
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	})
+
+	if err := http.ListenAndServe("localhost:8080", mux); err != nil {
+		log.Fatalf(err.Error())
 	}
 }
