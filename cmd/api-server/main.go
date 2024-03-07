@@ -1,24 +1,35 @@
 package main
 
 import (
-	supabase "github.com/nedpals/supabase-go"
-    "fmt"
-    "context"
+	"fmt"
 	"log"
 	"net/http"
 
-	user "github.com/ocr/api/user"
+	"github.com/joho/godotenv"
+	"github.com/ocr/internal/handlers"
 )
 
 func main() {
+	if err := godotenv.Load("../../.env"); err != nil {
+		log.Fatal("Unable to load env")
+	}
+
 	fmt.Println("Server listening on Port 8080. Live at http://localhost:8080")
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /login", http.HandlerFunc(user.CountWrapper(user.UserHandler)))
-	mux.Handle("POST /login", http.HandlerFunc(user.LoginHandler))
+	// supabaseUrl := os.Getenv("SUPABASE_URL")
+	// supabaseKey := os.Getenv("SUPABASE_KEY")
+	
+
+	mux.Handle("GET /image", http.HandlerFunc(handlers.ImageHandler))
+	mux.Handle("GET /student", http.HandlerFunc(handlers.StudentHandler))
+
+	mux.Handle("GET /login", http.HandlerFunc(handlers.CountWrapper(handlers.UserHandler)))
+	mux.Handle("POST /login", http.HandlerFunc(handlers.LoginHandler))
 
 	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
+		// forms := r.Form
 
 		search := r.URL.Query().Get("search")
 		fmt.Println(search)
