@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/ocr/internal/handlers"
@@ -17,11 +18,7 @@ func main() {
 	fmt.Println("Server listening on Port 8080. Live at http://localhost:8080")
 	mux := http.NewServeMux()
 
-	// supabaseUrl := os.Getenv("SUPABASE_URL")
-	// supabaseKey := os.Getenv("SUPABASE_KEY")
-	
-
-	mux.Handle("GET /image", http.HandlerFunc(handlers.ImageHandler))
+	// mux.Handle("GET /image", http.HandlerFunc(handlers.ImageHandler))
 	mux.Handle("GET /student", http.HandlerFunc(handlers.StudentHandler))
 
 	mux.Handle("POST /login", http.HandlerFunc(handlers.LoginHandler))
@@ -37,15 +34,19 @@ func main() {
 		fmt.Fprintf(w, "Parameter: %s", id)
 	})
 
-	// mux.HandleFunc("POST /login", func(w http.ResponseWriter, r *http.Request) {
-	//      fmt.Fprintf(w, "Login user")
-	// })
-
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	})
 
-	if err := http.ListenAndServe("localhost:8080", mux); err != nil {
-		log.Fatalf(err.Error())
+	s := &http.Server{
+		Addr:           ":8080",
+		Handler:        mux,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+
+	if err := s.ListenAndServe(); err != nil {
+		log.Fatal(err.Error())
 	}
 }

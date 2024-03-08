@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nedpals/supabase-go"
+	"github.com/supabase-community/supabase-go"
 )
 
 func CreateClient() (*supabase.Client, error) {
 	url := os.Getenv("SUPABASE_URL")
 	key := os.Getenv("SUPABASE_KEY")
+	
 
 	if url == "" {
 		return nil, fmt.Errorf("supabase url required")
@@ -19,5 +20,9 @@ func CreateClient() (*supabase.Client, error) {
 		return nil, fmt.Errorf("supabase api key required")
 	}
 
-	return supabase.CreateClient(url, key), nil
+	client, err := supabase.NewClient(url, key, nil); if err != nil {
+		return nil, fmt.Errorf("unable to connect to supabase")
+	}
+
+	return client, nil
 }

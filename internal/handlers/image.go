@@ -29,12 +29,14 @@ func StudentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var students []Student
-	err := client.DB.From("student").Select("*").Execute(&students)
+	res, err := client.From("student").Select("*", "", false).ExecuteTo(&students)
 
 	if err != nil {
 		fmt.Fprintf(w, "Cannot fetch data")
 		return
 	}
+
+	fmt.Println(res)
 
 	if err := json.NewEncoder(w).Encode(students); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,26 +44,26 @@ func StudentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ImageHandler(w http.ResponseWriter, r *http.Request) {
-	client, clientErr := supabase.CreateClient()
+// func ImageHandler(w http.ResponseWriter, r *http.Request) {
+// 	client, clientErr := supabase.CreateClient()
 
-	if clientErr != nil {
-		fmt.Fprintf(w, "Could not connect to db")
-		return
-	}
+// 	if clientErr != nil {
+// 		fmt.Fprintf(w, "Could not connect to db")
+// 		return
+// 	}
 
-	var profile []Profile
-	err := client.DB.From("profiles").Select("id, username, avatar").Execute(&profile)
+// 	var profile []Profile
+// 	err := client.From("profiles").Select("*").Execute(&profile)
 
-	if err != nil {
-		fmt.Fprintf(w, "Cannot fetch data")
-		return
-	}
+// 	if err != nil {
+// 		fmt.Fprintf(w, "Cannot fetch data")
+// 		return
+// 	}
 
 
-	if err := json.NewEncoder(w).Encode(profile); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	if err := json.NewEncoder(w).Encode(profile); err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-}
+// }
