@@ -21,7 +21,7 @@ func CreateClient() (*supabase.Client, error) {
 	}
 
 	client, err := supabase.NewClient(url, key, nil); if err != nil {
-		return nil, fmt.Errorf("unable to connect to supabase")
+		return nil, fmt.Errorf("unable to connect to supabase database: %w", err)
 	}
 
 	return client, nil
