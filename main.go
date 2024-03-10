@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Fatal("Unable to load env")
 	}
 
@@ -19,11 +19,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	// mux.Handle("GET /image", http.HandlerFunc(handlers.ImageHandler))
-	mux.Handle("GET /student", http.HandlerFunc(handlers.StudentHandler))
-
 	mux.Handle("POST /login", http.HandlerFunc(handlers.LoginHandler))
-
 	mux.Handle("POST /register", http.HandlerFunc(handlers.RegisterHandler))
+	mux.Handle("POST /message", http.HandlerFunc(handlers.MessageHandler))
+	mux.Handle("GET /s", http.HandlerFunc(handlers.StudentHandler))
 
 	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
