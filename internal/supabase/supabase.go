@@ -11,7 +11,6 @@ func CreateClient() (*supabase.Client, error) {
 	url := os.Getenv("SUPABASE_URL")
 	key := os.Getenv("SUPABASE_KEY")
 	
-
 	if url == "" {
 		return nil, fmt.Errorf("supabase url required")
 	}

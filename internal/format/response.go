@@ -1,4 +1,4 @@
-package response
+package format
 
 import (
 	"encoding/json"
@@ -6,6 +6,10 @@ import (
 	"log"
 	"net/http"
 )
+
+type SuccessResponse struct {
+    Data []interface{} `json:"data"`
+}
 
 type ErrorResponse struct {
     Error ErrorDetails `json:"error"`
