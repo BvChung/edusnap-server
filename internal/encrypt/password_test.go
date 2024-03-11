@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 )
-func Test_hashPassword(t *testing.T) {
+func Test_PasswordHashing(t *testing.T) {
 	data := []struct {
 		name string
 		password string
