@@ -13,7 +13,7 @@ Built with Go and utilizes Google Gemini Generative AI to provide educational in
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/your-username/edu-snap.git
+   git clone https://github.com/BvChung/edusnap-server.git
    ```
 
 2. Install the required dependencies:
