@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/ocr/internal/encrypt"
 	"github.com/ocr/internal/format"
-	"github.com/ocr/internal/supabase"
+	"github.com/ocr/internal/database"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,18 +30,25 @@ type RegisterUser struct {
 	Password string `json:"password"`
 }
 
+type LoginUser struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var credentials User
+	var credentials LoginUser
 	
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
+		log.Println("Failed to decode request body to JSON: ", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	
-	client, err := supabase.CreateClient()
+	client, err := database.CreateSupabaseClient()
 
 	if err != nil {
+		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -65,6 +73,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	format.NewSuccessResponse(w, data, http.StatusOK)
 }
 
+func LHandler(w http.ResponseWriter, r *http.Request) {
+	var credentials LoginUser
+	
+	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
+		log.Println("Failed to decode request body to JSON: ", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.Println(credentials)
+	
+	fmt.Fprintf(w, "Logged in")
+}
+
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var credentials User
 
@@ -74,7 +96,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := supabase.CreateClient()
+	client, err := database.CreateSupabaseClient()
 
 	if err != nil {
 		log.Println(err.Error())

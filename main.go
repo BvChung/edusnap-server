@@ -6,23 +6,21 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/ocr/internal/env"
 	"github.com/ocr/internal/handlers"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Unable to load env")
+	if err := env.LoadEnvVariables(); err != nil {
+		log.Fatal(err.Error())
 	}
-
-	fmt.Println("Server listening on Port 8080. Live at http://localhost:8080")
+	
 	mux := http.NewServeMux()
 
-	// mux.Handle("GET /image", http.HandlerFunc(handlers.ImageHandler))
-	mux.Handle("POST /login", http.HandlerFunc(handlers.LoginHandler))
-	mux.Handle("POST /register", http.HandlerFunc(handlers.RegisterHandler))
-	mux.Handle("POST /message", http.HandlerFunc(handlers.MessageHandler))
-	mux.Handle("GET /s", http.HandlerFunc(handlers.StudentHandler))
+	mux.Handle("POST /api/login", http.HandlerFunc(handlers.LoginHandler))
+	mux.Handle("POST /api/register", http.HandlerFunc(handlers.RegisterHandler))
+	mux.Handle("POST /api/message", http.HandlerFunc(handlers.MessageHandler))
+	mux.Handle("GET /api/s", http.HandlerFunc(handlers.StudentHandler))
 
 	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
@@ -48,4 +46,6 @@ func main() {
 	if err := s.ListenAndServe(); err != nil {
 		log.Fatal(err.Error())
 	}
+
+	fmt.Println("Server listening on Port 8080. Live at http://localhost:8080")
 }

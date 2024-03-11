@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/ocr/internal/supabase"
+	"github.com/ocr/internal/database"
 )
 
 type Student struct {
@@ -15,7 +15,7 @@ type Student struct {
 }
 
 func StudentHandler(w http.ResponseWriter, r *http.Request) {
-	client, clientErr := supabase.CreateClient()
+	client, clientErr := database.CreateSupabaseClient()
 
 	if clientErr != nil {
 		fmt.Fprintf(w, "Could not connect to db")

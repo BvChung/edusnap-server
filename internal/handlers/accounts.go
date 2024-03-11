@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/ocr/internal/format"
-	"github.com/ocr/internal/supabase"
+	"github.com/ocr/internal/database"
 )
 
 func AccountsHandler(w http.ResponseWriter, r *http.Request) {
-    client, err := supabase.CreateClient()
+    client, err := database.CreateSupabaseClient()
 
 	if err != nil {
 		log.Println(err.Error())
