@@ -19,14 +19,6 @@ func GenerateContent() error {
 	modelName := os.Getenv("GOOGLE_CLOUD_VERTEX_MODEL_NAME") 
 	temperature := 0.0
 
-	// construct this multimodal prompt:
-	// [image of colosseum] city: Rome, Landmark: the Colosseum
-	// [image of forbidden city]  city: Beijing, Landmark: the Forbidden City
-	// [new image]
-
-	// create prompt image parts
-	// colosseum
-
 	colosseum, err := partFromImageURL("https://storage.googleapis.com/cloud-samples-data/vertex-ai/llm/prompts/landmark1.png")
 	if err != nil {
 			log.Fatalf("unable to read image: %v", err)
