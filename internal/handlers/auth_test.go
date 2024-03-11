@@ -49,7 +49,7 @@ func Test_LoginHandler(t *testing.T) {
 		
 			w := httptest.NewRecorder()
 	
-			handler := http.HandlerFunc(LHandler)
+			handler := http.HandlerFunc(LoginHandler)
 	
 			handler.ServeHTTP(w, r)
 	

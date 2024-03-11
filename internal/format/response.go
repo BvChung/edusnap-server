@@ -8,7 +8,7 @@ import (
 )
 
 type SuccessResponse struct {
-    Data []interface{} `json:"data"`
+    Data interface{} `json:"data"`
 }
 
 type ErrorResponse struct {
@@ -23,10 +23,16 @@ type ErrorDetails struct {
 
 func NewSuccessResponse(w http.ResponseWriter, data interface{}, statusCode int) error {
     w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+    // w.Header().Set("Access-Control-Allow-Origin", "*")
+    // w.Header().Set("Access-Control-Allow-Origin", "*")
+    // w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    // w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+    // w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000/")
     w.WriteHeader(statusCode)
 
-    if err := json.NewEncoder(w).Encode(data); err != nil {
+    res := &SuccessResponse{Data: data}
+
+    if err := json.NewEncoder(w).Encode(res); err != nil {
         return fmt.Errorf("failed to encode data to JSON: %w", err)
     }
 
@@ -35,7 +41,7 @@ func NewSuccessResponse(w http.ResponseWriter, data interface{}, statusCode int)
 
 func NewErrorResponse(w http.ResponseWriter, message string, status string, statusCode int) error {
     w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+    // w.Header().Set("Access-Control-Allow-Origin", "*")
     w.WriteHeader(statusCode)
 
     res := ErrorResponse{

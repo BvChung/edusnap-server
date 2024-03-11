@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
+	"encoding/json"	
 	"log"
 	"net/http"
 
@@ -68,23 +67,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var returnedUser ReturnedUser = ReturnedUser{ID: foundUser.ID, Email: foundUser.Email} 
-	var data []ReturnedUser = []ReturnedUser{returnedUser}
+	data := []ReturnedUser{returnedUser}
 	
 	format.NewSuccessResponse(w, data, http.StatusOK)
-}
-
-func LHandler(w http.ResponseWriter, r *http.Request) {
-	var credentials LoginUser
-	
-	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
-		log.Println("Failed to decode request body to JSON: ", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	log.Println(credentials)
-	
-	fmt.Fprintf(w, "Logged in")
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
