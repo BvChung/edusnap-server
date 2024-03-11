@@ -8,10 +8,11 @@ import (
 
 	"github.com/ocr/internal/env"
 	"github.com/ocr/internal/handlers"
+	"github.com/rs/cors"
 )
 
 func main() {
-	if err := env.LoadEnvVariables(); err != nil {
+	if err := env.LoadEnvVariables(".env"); err != nil {
 		log.Fatal(err.Error())
 	}
 	
@@ -37,15 +38,15 @@ func main() {
 
 	s := &http.Server{
 		Addr:           ":8080",
-		Handler:        mux,
+		Handler:        cors.Default().Handler(mux),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
+	log.Println("Server listening on Port 8080. Live at http://localhost:8080")
+
 	if err := s.ListenAndServe(); err != nil {
 		log.Fatal(err.Error())
 	}
-
-	fmt.Println("Server listening on Port 8080. Live at http://localhost:8080")
 }
