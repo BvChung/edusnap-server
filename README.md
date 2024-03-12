@@ -5,11 +5,14 @@ Built with [Go](https://go.dev/) and utilizes Google Gemini Generative AI to pro
 ## API Endpoints
 
 ```
-/api/auth - Login + Register
+- Login + Register
+/api/auth 
 
-/api/accounts - Account information
+- Account information
+/api/accounts 
 
-/api/message - Make Gemini AI model request
+- Make Gemini AI model request
+/api/message 
 ```
 
 ## Installation
