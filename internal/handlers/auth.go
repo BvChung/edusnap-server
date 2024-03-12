@@ -12,38 +12,36 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
 type User struct {
-	ID      *uuid.UUID  `json:"id"`
-	Email string `json:"email"`
-	Password string `json:"password"`
+	ID       *uuid.UUID `json:"id"`
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
 }
 
 type ReturnedUser struct {
-	ID      *uuid.UUID  `json:"id"`
-	Email string `json:"email"`
+	ID    *uuid.UUID `json:"id"`
+	Email string     `json:"email"`
 }
 
 type RegisterUser struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type LoginUser struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var credentials LoginUser
-	
+
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
 		log.Println("Failed to decode request body to JSON: ", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	client, err := database.CreateSupabaseClient()
 
 	if err != nil {
@@ -52,9 +50,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var foundUser User;
-	
-	if _ ,err := client.From("users").Select("*", "exact", false).Eq("email", credentials.Email).Single().ExecuteTo(&foundUser); err != nil {
+	var foundUser User
+
+	if _, err := client.From("users").Select("*", "exact", false).Eq("email", credentials.Email).Single().ExecuteTo(&foundUser); err != nil {
 		log.Println("Email not found:", err.Error())
 		format.NewErrorResponse(w, "Email not found", "INVALID_CREDENTIALS", http.StatusUnauthorized)
 		return
@@ -66,9 +64,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var returnedUser ReturnedUser = ReturnedUser{ID: foundUser.ID, Email: foundUser.Email} 
+	var returnedUser ReturnedUser = ReturnedUser{ID: foundUser.ID, Email: foundUser.Email}
 	data := []ReturnedUser{returnedUser}
-	
+
 	format.NewSuccessResponse(w, data, http.StatusOK)
 }
 

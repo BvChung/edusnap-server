@@ -1,19 +1,33 @@
-package gemini
+package vertexai
 
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"cloud.google.com/go/vertexai/genai"
 )
 
+func CreateVertexClient() (*genai.Client, error) {
+	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT_ID")
+	location := os.Getenv("GOOGLE_CLOUD_REGION")
+
+	ctx := context.Background()
+
+	client, err := genai.NewClient(ctx, projectID, location)
+
+	if err != nil {
+		return client, fmt.Errorf("unable to create vertex ai client: %w", err)
+	}
+
+	return client, nil
+}
+
 func MakeGeminiRequest(format string, message string, decodedImage []byte) ([]genai.Part, error) {
 	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT_ID")
 	location := os.Getenv("GOOGLE_CLOUD_REGION")
 	modelName := os.Getenv("GOOGLE_CLOUD_VERTEX_MODEL_NAME")
-	temperature := 0.0
+	var temperature float32 = 0.0
 
 	var img genai.Blob = genai.ImageData(format, decodedImage)
 
@@ -37,7 +51,7 @@ func generateMultimodalContent(parts []genai.Part, projectID, location, modelNam
 
 	client, err := genai.NewClient(ctx, projectID, location)
 	if err != nil {
-		log.Fatal(err)
+		return content, fmt.Errorf("unable to create vertex ai client: %w", err)
 	}
 	defer client.Close()
 
@@ -46,7 +60,7 @@ func generateMultimodalContent(parts []genai.Part, projectID, location, modelNam
 
 	res, err := model.GenerateContent(ctx, parts...)
 	if err != nil {
-		return content, fmt.Errorf("unable to generate contents: %v", err)
+		return content, fmt.Errorf("unable to generate contents: %w", err)
 	}
 
 	content = getResponse(res)
@@ -59,10 +73,7 @@ func getResponse(res *genai.GenerateContentResponse) []genai.Part {
 
 	for _, cand := range res.Candidates {
 		if cand.Content.Role == "model" {
-			for _, part := range cand.Content.Parts {
-				fmt.Println(part)
-				geminiRes = append(geminiRes, part)
-			}
+			geminiRes = append(geminiRes, cand.Content.Parts...)
 		}
 	}
 

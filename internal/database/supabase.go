@@ -12,7 +12,7 @@ func CreateSupabaseClient() (*supabase.Client, error) {
 	key := os.Getenv("SUPABASE_KEY")
 
 	client, err := supabase.NewClient(url, key, nil)
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to supabase database: %w", err)
 	}

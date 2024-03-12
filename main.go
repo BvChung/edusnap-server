@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ocr/internal/database"
 	"github.com/ocr/internal/env"
 	"github.com/ocr/internal/handlers"
+	"github.com/ocr/internal/vertexai"
 	"github.com/rs/cors"
 )
 
@@ -16,16 +18,24 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	mux := http.NewServeMux()
+	supabaseClient, err := database.CreateSupabaseClient()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
+	vertexClient, err := vertexai.CreateVertexClient()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	mux := http.NewServeMux()
 	mux.Handle("POST /api/login", http.HandlerFunc(handlers.LoginHandler))
 	mux.Handle("POST /api/register", http.HandlerFunc(handlers.RegisterHandler))
 	mux.Handle("POST /api/message", http.HandlerFunc(handlers.MessageHandler))
-	mux.Handle("GET /api/s", http.HandlerFunc(handlers.StudentHandler))
+	mux.Handle("GET /api/s", handlers.NewStudentHandler(supabaseClient, vertexClient))
 
 	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		// forms := r.Form
 
 		search := r.URL.Query().Get("search")
 		fmt.Println(search)

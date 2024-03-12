@@ -14,7 +14,7 @@ func HashPassword(password string) ([]byte, error) {
 	}
 
 	hash, err := bcrypt.GenerateFromPassword(pw, bcrypt.DefaultCost)
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("unable to hash password, %w", err)
 	}

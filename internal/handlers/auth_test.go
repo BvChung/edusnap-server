@@ -15,9 +15,9 @@ func Test_LoginHandler(t *testing.T) {
 		t.Fatal("Unable to load env")
 	}
 
-	data := []struct{
-		Email string
-		Password string
+	data := []struct {
+		Email              string
+		Password           string
 		ExpectedStatusCode int
 	}{
 		{Email: "", Password: "", ExpectedStatusCode: 500},
@@ -33,26 +33,26 @@ func Test_LoginHandler(t *testing.T) {
 				Email:    d.Email,
 				Password: d.Password,
 			}
-		
+
 			jsonData, err := json.Marshal(user)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			r, err := http.NewRequest("POST", "/api/login", bytes.NewBuffer(jsonData))
-	
+
 			if err != nil {
 				t.Fatal(err.Error())
 			}
-	
+
 			r.Header.Set("Content-Type", "application/json")
-		
+
 			w := httptest.NewRecorder()
-	
+
 			handler := http.HandlerFunc(LoginHandler)
-	
+
 			handler.ServeHTTP(w, r)
-	
+
 			if status := w.Code; status != d.ExpectedStatusCode {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 			}

@@ -5,35 +5,39 @@ import (
 	"fmt"
 	"net/http"
 
+	"cloud.google.com/go/vertexai/genai"
 	"github.com/google/uuid"
-	"github.com/ocr/internal/database"
+	"github.com/supabase-community/supabase-go"
 )
 
 type Student struct {
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	Name string `json:"name"`
+	ID   *uuid.UUID `json:"id,omitempty"`
+	Name string     `json:"name"`
 }
 
-func StudentHandler(w http.ResponseWriter, r *http.Request) {
-	client, clientErr := database.CreateSupabaseClient()
+type StudentHandler struct {
+	DBClient       *supabase.Client
+	VertexAIClient *genai.Client
+}
 
-	if clientErr != nil {
-		fmt.Fprintf(w, "Could not connect to db")
-		return
-	}
+func (sh *StudentHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	client := sh.DBClient
 
 	var students []Student
-	res, err := client.From("student").Select("*", "", false).ExecuteTo(&students)
+
+	_, err := client.From("student").Select("*", "", false).ExecuteTo(&students)
 
 	if err != nil {
 		fmt.Fprintf(w, "Cannot fetch data")
 		return
 	}
 
-	fmt.Println(res)
-
 	if err := json.NewEncoder(w).Encode(students); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func NewStudentHandler(s *supabase.Client, v *genai.Client) *StudentHandler {
+	return &StudentHandler{DBClient: s}
 }

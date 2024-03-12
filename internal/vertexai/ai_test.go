@@ -1,4 +1,4 @@
-package gemini
+package vertexai
 
 import (
 	"encoding/base64"

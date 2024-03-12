@@ -9,19 +9,19 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ocr/internal/format"
-	"github.com/ocr/internal/gemini"
+	"github.com/ocr/internal/vertexai"
 )
 
-type Message struct{
-	ID *uuid.UUID `json:"id"`
-	Message string `json:"message"`
-	EncodedImage string `json:"encoded_image"`
+type Message struct {
+	ID           *uuid.UUID `json:"id"`
+	Message      string     `json:"message"`
+	EncodedImage string     `json:"encoded_image"`
 }
 
-type ReturnedMessage struct{
-	ID *uuid.UUID `json:"id"`
-	Message string `json:"message"`
-	DecodedImage string `json:"decoded_image"`
+type ReturnedMessage struct {
+	ID           *uuid.UUID `json:"id"`
+	Message      string     `json:"message"`
+	DecodedImage string     `json:"decoded_image"`
 }
 
 func MessageHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func MessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b64, mimeType, err := gemini.ExtractBase64(newMessage.EncodedImage)
+	b64, mimeType, err := vertexai.ExtractBase64(newMessage.EncodedImage)
 	if err != nil {
 		format.NewErrorResponse(w, "Invalid base64 encoded string", "INVALID_BASE64", http.StatusBadRequest)
 		return
