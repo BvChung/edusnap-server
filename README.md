@@ -1,12 +1,16 @@
 # EduSnap REST API
 
-Built with Go and utilizes Google Gemini Generative AI to provide educational information based on user images/screenshots.
+Built with [Go](https://go.dev/) and utilizes Google Gemini Generative AI to provide educational information based on user images/screenshots.
 
-## Features
+## API Endpoints
 
-- Upload images or screenshots to the application.
-- Utilize Google Gemini Generative AI to analyze the images.
-- Receive educative information based on the analyzed images.
+```
+/api/auth - Login + Register
+
+/api/accounts - Account information
+
+/api/message - Make Gemini AI model request
+```
 
 ## Installation
 
@@ -22,8 +26,9 @@ Built with Go and utilizes Google Gemini Generative AI to provide educational in
    go get -d ./...
    ```
 
-3. Build the application:
+## Running Unit Tests
+```
+cd to directory and run
 
-   ```shell
-   go build
-   ```
+go test . -v
+```
