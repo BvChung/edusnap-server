@@ -15,7 +15,7 @@ func main() {
 	if err := env.LoadEnvVariables(".env"); err != nil {
 		log.Fatal(err.Error())
 	}
-	
+
 	mux := http.NewServeMux()
 
 	mux.Handle("POST /api/login", http.HandlerFunc(handlers.LoginHandler))
