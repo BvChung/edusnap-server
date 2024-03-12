@@ -16,18 +16,14 @@ type ErrorResponse struct {
 }
 
 type ErrorDetails struct {
-    Code    int16 `json:"code"`
+    Code    string `json:"code"`
     Message string `json:"message"`
-    Status string `json:"status"`
+    Type string `json:"type"`
 }
 
 func NewSuccessResponse(w http.ResponseWriter, data interface{}, statusCode int) error {
     w.Header().Set("Content-Type", "application/json")
-    // w.Header().Set("Access-Control-Allow-Origin", "*")
-    // w.Header().Set("Access-Control-Allow-Origin", "*")
-    // w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-    // w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-    // w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000/")
+
     w.WriteHeader(statusCode)
 
     res := &SuccessResponse{Data: data}
@@ -39,13 +35,13 @@ func NewSuccessResponse(w http.ResponseWriter, data interface{}, statusCode int)
 	return nil
 }
 
-func NewErrorResponse(w http.ResponseWriter, message string, status string, statusCode int) error {
+func NewErrorResponse(w http.ResponseWriter, message string, errorCode string, statusCode int) error {
     w.Header().Set("Content-Type", "application/json")
     // w.Header().Set("Access-Control-Allow-Origin", "*")
     w.WriteHeader(statusCode)
 
     res := ErrorResponse{
-        Error: ErrorDetails{Code: int16(statusCode), Message: message, Status: status},
+        Error: ErrorDetails{Code: errorCode, Message: message},
     }
 
     if err := json.NewEncoder(w).Encode(res); err != nil {

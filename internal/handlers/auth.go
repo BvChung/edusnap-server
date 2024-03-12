@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"encoding/json"	
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/ocr/internal/database"
 	"github.com/ocr/internal/encrypt"
 	"github.com/ocr/internal/format"
-	"github.com/ocr/internal/database"
 	"golang.org/x/crypto/bcrypt"
 )
 

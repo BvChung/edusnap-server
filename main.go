@@ -32,9 +32,7 @@ func main() {
 		fmt.Fprintf(w, "Parameter: %s", id)
 	})
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.NotFound(w, r)
-	})
+	mux.Handle("/", http.NotFoundHandler())
 
 	s := &http.Server{
 		Addr:           ":8080",

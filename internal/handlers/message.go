@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ocr/internal/format"
+	"github.com/ocr/internal/gemini"
 )
 
 type Message struct{
@@ -32,7 +33,7 @@ func MessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b64, mimeType, err := format.ExtractBase64(newMessage.EncodedImage)
+	b64, mimeType, err := gemini.ExtractBase64(newMessage.EncodedImage)
 	if err != nil {
 		format.NewErrorResponse(w, "Invalid base64 encoded string", "INVALID_BASE64", http.StatusBadRequest)
 		return
