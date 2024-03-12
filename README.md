@@ -20,20 +20,6 @@ Built with [Go](https://go.dev/) and utilizes Google Gemini Generative AI to pro
 /api/message 
 ```
 
-## Installation
-
-1. Clone the repository:
-
-   ```shell
-   git clone https://github.com/BvChung/edusnap-server.git
-   ```
-
-2. Install the required dependencies:
-
-   ```shell
-   go get -d ./...
-   ```
-
 ## Running Unit Tests
 ```
 cd to directory and run
