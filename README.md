@@ -21,8 +21,12 @@ Built with [Go](https://go.dev/) and utilizes Google Gemini Generative AI to pro
 ```
 
 ## Running Unit Tests
+- Unit tests are Go files with an alias ending with _test.go
+- cd to directory and run
 ```
-cd to directory and run
+- Run all tests in directory
+go test -v .
 
-go test . -v
+- Run test file + corresponding file functions are imported from
+go test -v foo_test.go bar.go 
 ```
