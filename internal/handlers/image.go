@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"cloud.google.com/go/vertexai/genai"
 	"github.com/google/uuid"
+	"github.com/ocr/internal/response"
 	"github.com/supabase-community/supabase-go"
 )
 
@@ -32,12 +32,17 @@ func (sh *StudentHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(students); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	response.NewSuccessResponse(w, students, http.StatusOK)
 }
 
 func NewStudentHandler(s *supabase.Client, v *genai.Client) *StudentHandler {
-	return &StudentHandler{DBClient: s}
+	return &StudentHandler{DBClient: s, VertexAIClient: v}
 }
+
+// mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
+// 	id := r.PathValue("id")
+
+// 	search := r.URL.Query().Get("search")
+// 	fmt.Println(search)
+// 	fmt.Fprintf(w, "Parameter: %s", id)
+// })

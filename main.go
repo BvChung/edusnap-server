@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/ocr/internal/database"
 	"github.com/ocr/internal/env"
 	"github.com/ocr/internal/handlers"
+	"github.com/ocr/internal/middleware"
 	"github.com/ocr/internal/vertexai"
 	"github.com/rs/cors"
 )
@@ -31,22 +31,14 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("POST /api/login", http.HandlerFunc(handlers.LoginHandler))
 	mux.Handle("POST /api/register", http.HandlerFunc(handlers.RegisterHandler))
-	mux.Handle("POST /api/message", http.HandlerFunc(handlers.MessageHandler))
-	mux.Handle("GET /api/s", handlers.NewStudentHandler(supabaseClient, vertexClient))
-
-	mux.HandleFunc("GET /profile/{id}", func(w http.ResponseWriter, r *http.Request) {
-		id := r.PathValue("id")
-
-		search := r.URL.Query().Get("search")
-		fmt.Println(search)
-		fmt.Fprintf(w, "Parameter: %s", id)
-	})
+	mux.Handle("/api/messages", handlers.NewMessagesHandler(supabaseClient, vertexClient))
+	mux.Handle("/api/s", handlers.NewStudentHandler(supabaseClient, vertexClient))
 
 	mux.Handle("/", http.NotFoundHandler())
 
 	s := &http.Server{
 		Addr:           ":8080",
-		Handler:        cors.Default().Handler(mux),
+		Handler:        cors.Default().Handler(middleware.LoggingMiddleware(mux)),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
