@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
+	"github.com/ocr/internal/database"
 )
 
 func Test_LoginHandler(t *testing.T) {
@@ -20,16 +21,22 @@ func Test_LoginHandler(t *testing.T) {
 		Password           string
 		ExpectedStatusCode int
 	}{
-		{Email: "", Password: "", ExpectedStatusCode: 500},
-		{Email: "", Password: "pw", ExpectedStatusCode: 500},
-		{Email: "b@gmail.com", Password: "", ExpectedStatusCode: 500},
+		{Email: "", Password: "", ExpectedStatusCode: 401},
+		{Email: "", Password: "pw", ExpectedStatusCode: 401},
+		{Email: "b@gmail.com", Password: "", ExpectedStatusCode: 401},
 		{Email: "b@gmail.com", Password: "pw", ExpectedStatusCode: 200},
 		{Email: "asff@gmail.com", Password: "pw", ExpectedStatusCode: 401},
 	}
 
+	client, err := database.CreateSupabaseClient()
+
+	if err != nil {
+		t.Fatalf("Unable to connect to database: %s", err.Error())
+	}
+
 	for _, d := range data {
 		t.Run("Test login route", func(t *testing.T) {
-			user := &LoginUser{
+			user := &Credentials{
 				Email:    d.Email,
 				Password: d.Password,
 			}
@@ -49,12 +56,65 @@ func Test_LoginHandler(t *testing.T) {
 
 			w := httptest.NewRecorder()
 
-			handler := http.HandlerFunc(LoginHandler)
+			handler := http.Handler(NewLoginHandler(client))
 
 			handler.ServeHTTP(w, r)
 
 			if status := w.Code; status != d.ExpectedStatusCode {
-				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+				t.Errorf("handler returned wrong status code: got %v want %v", status, d.ExpectedStatusCode)
+			}
+		})
+	}
+}
+
+func Test_RegisterHandler(t *testing.T) {
+	if err := godotenv.Load("../../.env"); err != nil {
+		t.Fatal("Unable to load env")
+	}
+
+	data := []struct {
+		Email              string
+		Password           string
+		ExpectedStatusCode int
+	}{
+		{Email: "person@gmail.com", Password: "", ExpectedStatusCode: 400},
+		{Email: "b@gmail.com", Password: "pw", ExpectedStatusCode: 409},
+	}
+
+	client, err := database.CreateSupabaseClient()
+
+	if err != nil {
+		t.Fatalf("Unable to connect to database: %s", err.Error())
+	}
+
+	for _, d := range data {
+		t.Run("Test register route", func(t *testing.T) {
+			user := &Credentials{
+				Email:    d.Email,
+				Password: d.Password,
+			}
+
+			jsonData, err := json.Marshal(user)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			r, err := http.NewRequest("POST", "/api/register", bytes.NewBuffer(jsonData))
+
+			if err != nil {
+				t.Fatal(err.Error())
+			}
+
+			r.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+
+			handler := http.Handler(NewRegisterHandler(client))
+
+			handler.ServeHTTP(w, r)
+
+			if status := w.Code; status != d.ExpectedStatusCode {
+				t.Errorf("handler returned wrong status code: got %v want %v", status, d.ExpectedStatusCode)
 			}
 		})
 	}
