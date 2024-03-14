@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/ocr/internal/database"
 	"github.com/ocr/internal/encrypt"
-	"github.com/ocr/internal/format"
+	"github.com/ocr/internal/response"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -33,6 +33,7 @@ type LoginUser struct {
 	Password string `json:"password"`
 }
 
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var credentials LoginUser
 
@@ -42,11 +43,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := database.CreateSupabaseClient()
-
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	client, clientErr := database.CreateSupabaseClient()
+	
+	if clientErr != nil {
+		log.Println(clientErr.Error())
+		http.Error(w, clientErr.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -54,20 +55,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if _, err := client.From("users").Select("*", "exact", false).Eq("email", credentials.Email).Single().ExecuteTo(&foundUser); err != nil {
 		log.Println("Email not found:", err.Error())
-		format.NewErrorResponse(w, "Email not found", "INVALID_CREDENTIALS", http.StatusUnauthorized)
+		response.NewErrorResponse(w, "Email not found", "INVALID_CREDENTIALS", http.StatusUnauthorized)
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(credentials.Password)); err != nil {
 		log.Println("Invalid password:", err.Error())
-		format.NewErrorResponse(w, "Invalid password", "INVALID_CREDENTIALS", http.StatusUnauthorized)
+		response.NewErrorResponse(w, "Invalid password", "INVALID_CREDENTIALS", http.StatusUnauthorized)
 		return
 	}
 
 	var returnedUser ReturnedUser = ReturnedUser{ID: foundUser.ID, Email: foundUser.Email}
 	data := []ReturnedUser{returnedUser}
 
-	format.NewSuccessResponse(w, data, http.StatusOK)
+	response.NewSuccessResponse(w, data, http.StatusOK)
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -75,15 +76,15 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&credentials); err != nil {
 		log.Println("Failed to decode request body to JSON: ", err.Error())
-		format.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
+		response.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
 		return
 	}
 
-	client, err := database.CreateSupabaseClient()
+	client, clientErr := database.CreateSupabaseClient()
 
-	if err != nil {
-		log.Println(err.Error())
-		format.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
+	if clientErr != nil {
+		log.Println(clientErr.Error())
+		response.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
 		return
 	}
 
@@ -91,7 +92,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println(err.Error())
-		format.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
+		response.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
 		return
 	}
 
@@ -100,9 +101,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if _, err := client.From("users").Insert(row, false, "", "", "").ExecuteTo(&data); err != nil {
 		log.Println("User with email already exists:", err.Error())
-		format.NewErrorResponse(w, "User with email already exists", "EMAIL_ALREADY_IN_USE", http.StatusConflict)
+		response.NewErrorResponse(w, "User with email already exists", "EMAIL_ALREADY_IN_USE", http.StatusConflict)
 		return
 	}
 
-	format.NewSuccessResponse(w, data, http.StatusCreated)
+	response.NewSuccessResponse(w, data, http.StatusCreated)
 }
