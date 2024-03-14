@@ -29,11 +29,10 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("POST /api/login", http.HandlerFunc(handlers.LoginHandler))
-	mux.Handle("POST /api/register", http.HandlerFunc(handlers.RegisterHandler))
+	mux.Handle("/api/login", handlers.NewLoginHandler(supabaseClient))
+	mux.Handle("/api/register", handlers.NewRegisterHandler(supabaseClient))
 	mux.Handle("/api/messages", handlers.NewMessagesHandler(supabaseClient, vertexClient))
 	mux.Handle("/api/s", handlers.NewStudentHandler(supabaseClient, vertexClient))
-
 	mux.Handle("/", http.NotFoundHandler())
 
 	s := &http.Server{
