@@ -46,17 +46,11 @@ func Test_LoginHandler(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			r, err := http.NewRequest("POST", "/api/login", bytes.NewBuffer(jsonData))
-
-			if err != nil {
-				t.Fatal(err.Error())
-			}
+			r := httptest.NewRequest("POST", "/api/login", bytes.NewBuffer(jsonData))
+			w := httptest.NewRecorder()
+			handler := http.Handler(NewLoginHandler(client))
 
 			r.Header.Set("Content-Type", "application/json")
-
-			w := httptest.NewRecorder()
-
-			handler := http.Handler(NewLoginHandler(client))
 
 			handler.ServeHTTP(w, r)
 
@@ -99,17 +93,11 @@ func Test_RegisterHandler(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			r, err := http.NewRequest("POST", "/api/register", bytes.NewBuffer(jsonData))
-
-			if err != nil {
-				t.Fatal(err.Error())
-			}
+			r := httptest.NewRequest("POST", "/api/register", bytes.NewBuffer(jsonData))
+			w := httptest.NewRecorder()
+			handler := http.Handler(NewRegisterHandler(client))
 
 			r.Header.Set("Content-Type", "application/json")
-
-			w := httptest.NewRecorder()
-
-			handler := http.Handler(NewRegisterHandler(client))
 
 			handler.ServeHTTP(w, r)
 
