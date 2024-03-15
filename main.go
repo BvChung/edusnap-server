@@ -32,6 +32,7 @@ func main() {
 	mux.Handle("/api/login", handlers.NewLoginHandler(supabaseClient))
 	mux.Handle("/api/register", handlers.NewRegisterHandler(supabaseClient))
 	mux.Handle("/api/messages", handlers.NewMessagesHandler(supabaseClient, vertexClient))
+	// mux.Handle("/api/accounts", http.HandlerFunc(handlers.AccountsHandler))
 	mux.Handle("/api/s", handlers.NewStudentHandler(supabaseClient, vertexClient))
 	mux.Handle("/", http.NotFoundHandler())
 

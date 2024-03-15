@@ -18,7 +18,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var data []ReturnedUser
-	if _, err := client.From("users").Select("*", "", false).Eq("id", "").ExecuteTo(&data); err != nil {
+	if _, err := client.From("users").Select("*", "", false).ExecuteTo(&data); err != nil {
 		response.NewErrorResponse(w, "Cannot find user", "NOT_FOUND", http.StatusNotFound)
 		return
 	}
