@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	BadRequest = "bad_request"
 	InvalidRequest = "invalid_request_error"
 	ServerError = "server_error"
 )
