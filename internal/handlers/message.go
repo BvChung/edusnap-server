@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"cloud.google.com/go/vertexai/genai"
 	"github.com/google/uuid"
@@ -22,8 +23,8 @@ type Message struct {
 
 type Image struct {
 	MimeType string
-	Base64 string
-	RawEncoding []byte
+	Base64 *string
+	RawEncoding *[]byte
 }
 
 func (img *Image) DecodeBase64() error {
@@ -31,13 +32,13 @@ func (img *Image) DecodeBase64() error {
 		return fmt.Errorf("img nil pointer exception")
 	}
 
-	rawEncoding, err := base64.StdEncoding.DecodeString(img.Base64)
+	rawEncoding, err := base64.StdEncoding.DecodeString(*img.Base64)
 
 	if err != nil {
 		return fmt.Errorf("unable to decode base64 string: %w", err)
 	}
 
-	img.RawEncoding = rawEncoding
+	img.RawEncoding = &rawEncoding
 
 	return nil
 }
@@ -84,39 +85,66 @@ func CreateMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&newMessage); err != nil {
 		log.Println("Failed to decode request body to JSON: ", err.Error())
-		response.NewErrorResponse(w, "Internal server error", "SERVER_ERROR", http.StatusInternalServerError)
+		response.NewErrorResponse(w, "Malformed request body", "BAD_REQUEST", http.StatusBadRequest)
 		return
 	}
 
-	var images []Image = make([]Image, 0, 10)
-
-	for _, img := range newMessage.EncodedImages{
-		b64, mimeType, err := vertexai.ExtractBase64(img)
-
-		if err != nil {
-			response.NewErrorResponse(w, "Invalid base64 encoded string", response.InvalidRequest, http.StatusBadRequest)
-			return
-		}
-
-		images = append(images, Image{MimeType: mimeType, Base64: b64, RawEncoding: nil})
-	}
+	var wg sync.WaitGroup
+	mu := sync.Mutex{}
+	errCh := make(chan error, len(newMessage.EncodedImages))
 	
 	data := []ReturnedMessage{}
+	var images []*Image = make([]*Image, 0, 10)
+
+	for _, encImg := range newMessage.EncodedImages{
+		wg.Add(1)
+
+		go processImage(&encImg, &images, &mu, &wg, errCh)
+	}
+
+	wg.Wait()
+	close(errCh)
+
+	for err := range errCh{
+		if err != nil {
+			log.Println(err.Error())
+			response.NewErrorResponse(w, "Error processing uploaded images", response.BadRequest, http.StatusBadRequest)
+			return
+		}
+	}
 
 	if len(images) > 0 {
 		for i := 0; i < len(images); i++ {
-			if err := images[i].DecodeBase64(); err != nil {
-				log.Println(err.Error())
-				response.NewErrorResponse(w, "Internal server error", response.ServerError, http.StatusInternalServerError)
-				return
-			}
-
 			id := uuid.New()
 
-			returnedMessage := ReturnedMessage{ID: &id, Message: newMessage.Message, DecodedImage: string(images[i].RawEncoding)}
+			returnedMessage := ReturnedMessage{ID: &id, Message: newMessage.Message, DecodedImage: string((*images[i].RawEncoding))}
 			data = append(data, returnedMessage)
 		}
 	}
 
 	response.NewSuccessResponse(w, data, http.StatusOK)
+}
+
+func processImage(encodedImg *string, images *[]*Image, mu *sync.Mutex, wg *sync.WaitGroup, errCh chan<- error){
+	defer func(){
+		mu.Unlock()
+		wg.Done()
+	}()
+
+	mu.Lock()
+	b64, mimeType, err := vertexai.ExtractBase64(*encodedImg)
+
+	if err != nil {
+		errCh <- err
+		return
+	}
+
+	processedImg := &Image{MimeType: mimeType, Base64: &b64, RawEncoding: nil}
+
+	if err = processedImg.DecodeBase64(); err != nil {
+		errCh <- err
+		return
+	}
+
+	*images = append(*images, processedImg)
 }
