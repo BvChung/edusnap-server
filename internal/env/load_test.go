@@ -14,7 +14,7 @@ func Test_LoadEnv(t *testing.T) {
 		"GOOGLE_CLOUD_VERTEX_MODEL_NAME",
 	}
 
-	for _, key := range envKeys{
+	for _, key := range envKeys {
 		t.Run("Test missing env variables error", func(t *testing.T) {
 			t.Setenv(key, "")
 

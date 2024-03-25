@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	BadRequest = "bad_request"
+	BadRequest     = "bad_request"
 	InvalidRequest = "invalid_request_error"
-	ServerError = "server_error"
+	ServerError    = "server_error"
 )
 
 type SuccessResponse[T any] struct {
@@ -42,7 +42,7 @@ func NewSuccessResponse[T any](w http.ResponseWriter, data []T, statusCode int) 
 
 func NewErrorResponse(w http.ResponseWriter, message string, errorCode string, statusCode int) error {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	w.WriteHeader(statusCode)
 
 	res := ErrorResponse{

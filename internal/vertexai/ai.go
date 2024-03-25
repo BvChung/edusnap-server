@@ -27,7 +27,6 @@ func GenerateAIServiceRequest(client *genai.Client) {
 
 }
 
-
 func MakeGeminiRequest(format string, message string, decodedImage []byte) ([]genai.Part, error) {
 	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT_ID")
 	location := os.Getenv("GOOGLE_CLOUD_REGION")

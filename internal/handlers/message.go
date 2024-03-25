@@ -16,14 +16,14 @@ import (
 )
 
 type Message struct {
-	UserID           *uuid.UUID `json:"user_id"`
-	Message      string     `json:"message"`
-	EncodedImages []string     `json:"encoded_images"`
+	UserID        *uuid.UUID `json:"user_id"`
+	Message       string     `json:"message"`
+	EncodedImages []string   `json:"encoded_images"`
 }
 
 type Image struct {
-	MimeType string
-	Base64 *string
+	MimeType    string
+	Base64      *string
 	RawEncoding *[]byte
 }
 
@@ -50,7 +50,7 @@ type ReturnedMessage struct {
 }
 
 type MessagesHandler struct {
-	DBClient *supabase.Client
+	DBClient       *supabase.Client
 	VertexAIClient *genai.Client
 }
 
@@ -92,11 +92,11 @@ func CreateMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 	mu := sync.Mutex{}
 	errCh := make(chan error, len(newMessage.EncodedImages))
-	
+
 	data := []ReturnedMessage{}
 	var images []*Image = make([]*Image, 0, 10)
 
-	for _, encImg := range newMessage.EncodedImages{
+	for _, encImg := range newMessage.EncodedImages {
 		wg.Add(1)
 
 		go processImage(&encImg, &images, &mu, &wg, errCh)
@@ -105,7 +105,7 @@ func CreateMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 	close(errCh)
 
-	for err := range errCh{
+	for err := range errCh {
 		if err != nil {
 			log.Println(err.Error())
 			response.NewErrorResponse(w, "Error processing uploaded images", response.BadRequest, http.StatusBadRequest)
@@ -125,8 +125,8 @@ func CreateMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	response.NewSuccessResponse(w, data, http.StatusOK)
 }
 
-func processImage(encodedImg *string, images *[]*Image, mu *sync.Mutex, wg *sync.WaitGroup, errCh chan<- error){
-	defer func(){
+func processImage(encodedImg *string, images *[]*Image, mu *sync.Mutex, wg *sync.WaitGroup, errCh chan<- error) {
+	defer func() {
 		mu.Unlock()
 		wg.Done()
 	}()
