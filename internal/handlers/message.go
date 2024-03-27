@@ -29,7 +29,7 @@ type Image struct {
 
 func (img *Image) DecodeBase64() error {
 	if img == nil {
-		return fmt.Errorf("img nil pointer exception")
+		return fmt.Errorf("Image struct is nil")
 	}
 
 	rawEncoding, err := base64.StdEncoding.DecodeString(*img.Base64)
@@ -59,9 +59,9 @@ func (mh *MessagesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 	case "GET":
-		GetMessages(mh.DBClient, w, r)
+		getMessages(mh.DBClient, w, r)
 	case "POST":
-		CreateMessage(mh.DBClient, w, r)
+		createMessage(mh.DBClient, w, r)
 	}
 }
 
@@ -69,7 +69,7 @@ func NewMessagesHandler(s *supabase.Client, v *genai.Client) *MessagesHandler {
 	return &MessagesHandler{DBClient: s, VertexAIClient: v}
 }
 
-func GetMessages(client *supabase.Client, w http.ResponseWriter, r *http.Request) {
+func getMessages(client *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	var data []Message
 
 	if _, err := client.From("messages").Select("*", "", false).ExecuteTo(&data); err != nil {
@@ -80,7 +80,7 @@ func GetMessages(client *supabase.Client, w http.ResponseWriter, r *http.Request
 	response.NewSuccessResponse(w, data, http.StatusOK)
 }
 
-func CreateMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
+func createMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	var newMessage Message
 
 	if err := json.NewDecoder(r.Body).Decode(&newMessage); err != nil {
@@ -93,7 +93,7 @@ func CreateMessage(s *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	mu := sync.Mutex{}
 	errCh := make(chan error, len(newMessage.EncodedImages))
 
-	data := []ReturnedMessage{}
+	var data []ReturnedMessage = make([]ReturnedMessage, 5)
 	var images []*Image = make([]*Image, 0, 10)
 
 	for _, encImg := range newMessage.EncodedImages {
