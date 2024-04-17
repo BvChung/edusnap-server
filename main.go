@@ -7,33 +7,28 @@ import (
 
 	"github.com/ocr/internal/database"
 	"github.com/ocr/internal/env"
-	"github.com/ocr/internal/handlers"
 	"github.com/ocr/internal/middleware"
 	"github.com/ocr/internal/services/vertexai"
 	"github.com/rs/cors"
 )
 
-func main() {
+func run() error{
 	if err := env.LoadEnvVariables(".env"); err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	supabaseClient, err := database.CreateSupabaseClient()
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	vertexClient, err := vertexai.CreateVertexClient()
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/api/login", handlers.NewLoginHandler(supabaseClient))
-	mux.Handle("/api/register", handlers.NewRegisterHandler(supabaseClient))
-	mux.Handle("/api/messages", handlers.NewMessagesHandler(supabaseClient, vertexClient))
-	mux.Handle("/", http.NotFoundHandler())
-	
+	addRoutes(mux, supabaseClient, vertexClient)
 
 	s := &http.Server{
 		Addr:           ":8080",
@@ -46,6 +41,14 @@ func main() {
 	log.Println("Server listening on Port 8080. Live at http://localhost:8080")
 
 	if err := s.ListenAndServe(); err != nil {
-		log.Fatal(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
 	}
 }
