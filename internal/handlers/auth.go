@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/ocr/internal/services/encrypt"
 	"github.com/ocr/internal/response"
+	"github.com/ocr/internal/services/encrypt"
 	"github.com/supabase-community/supabase-go"
 	"golang.org/x/crypto/bcrypt"
 )

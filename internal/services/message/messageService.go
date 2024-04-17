@@ -9,7 +9,7 @@ import (
 	"github.com/ocr/internal/services/vertexai"
 )
 
-func ProcessMessageData(messageRequestBody *models.Message)([]models.ReturnedMessage, error) {
+func ProcessMessageData(messageRequestBody *models.Message) ([]models.ReturnedMessage, error) {
 	var wg sync.WaitGroup
 	mu := sync.Mutex{}
 	errChan := make(chan error, len(messageRequestBody.EncodedImages))
@@ -31,7 +31,7 @@ func ProcessMessageData(messageRequestBody *models.Message)([]models.ReturnedMes
 			return data, fmt.Errorf("error processing uploaded images")
 		}
 	}
-	
+
 	if len(images) > 0 {
 		for i := 0; i < len(images); i++ {
 			id := uuid.New()
@@ -44,7 +44,7 @@ func ProcessMessageData(messageRequestBody *models.Message)([]models.ReturnedMes
 	return data, nil
 }
 
-func decodeImage(encodedImg *string, images *[]* models.Image, mu *sync.Mutex, wg *sync.WaitGroup, errCh chan<- error) {
+func decodeImage(encodedImg *string, images *[]*models.Image, mu *sync.Mutex, wg *sync.WaitGroup, errCh chan<- error) {
 	defer func() {
 		mu.Unlock()
 		wg.Done()

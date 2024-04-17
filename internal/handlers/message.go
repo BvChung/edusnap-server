@@ -33,7 +33,7 @@ func NewMessagesHandler(s *supabase.Client, v *genai.Client) *MessagesHandler {
 }
 
 func getMessages(client *supabase.Client, w http.ResponseWriter, r *http.Request) {
-	var data [] models.Message
+	var data []models.Message
 
 	if _, err := client.From("messages").Select("*", "", false).ExecuteTo(&data); err != nil {
 		response.NewErrorResponse(w, "unable to get messages", response.ServerError, http.StatusInternalServerError)
