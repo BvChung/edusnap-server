@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/vertexai/genai"
-	"github.com/ocr/internal/handlers"
+	"github.com/ocr/cmd/handlers"
 	"github.com/supabase-community/supabase-go"
 )
 

@@ -5,12 +5,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ocr/internal/database"
-	"github.com/ocr/internal/env"
-	"github.com/ocr/internal/middleware"
-	"github.com/ocr/internal/services/vertexai"
+	"github.com/ocr/cmd/database"
+	"github.com/ocr/cmd/env"
+	"github.com/ocr/cmd/middleware"
+	"github.com/ocr/cmd/services/vertexai"
 	"github.com/rs/cors"
 )
+
+func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
 
 func run() error{
 	if err := env.LoadEnvVariables(".env"); err != nil {
@@ -45,10 +52,4 @@ func run() error{
 	}
 
 	return nil
-}
-
-func main() {
-	if err := run(); err != nil {
-		log.Fatal(err)
-	}
 }

@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/vertexai/genai"
-	"github.com/ocr/internal/models"
-	"github.com/ocr/internal/response"
-	"github.com/ocr/internal/services/message"
+	"github.com/ocr/cmd/models"
+	"github.com/ocr/cmd/response"
+	"github.com/ocr/cmd/services/message"
 	"github.com/supabase-community/supabase-go"
 )
 

@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/ocr/internal/models"
-	"github.com/ocr/internal/services/vertexai"
+	"github.com/ocr/cmd/models"
+	"github.com/ocr/cmd/services/vertexai"
 )
 
 func ProcessMessageData(messageRequestBody *models.Message) ([]models.ReturnedMessage, error) {

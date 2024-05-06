@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/ocr/internal/database"
+	"github.com/ocr/cmd/database"
 )
 
 func Test_LoginHandler(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/ocr/internal/response"
+	"github.com/ocr/cmd/response"
 )
 
 func JWTHandler(next http.Handler) http.Handler {

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ocr/internal/database"
-	"github.com/ocr/internal/response"
+	"github.com/ocr/cmd/database"
+	"github.com/ocr/cmd/response"
 )
 
 func AccountsHandler(w http.ResponseWriter, r *http.Request) {
