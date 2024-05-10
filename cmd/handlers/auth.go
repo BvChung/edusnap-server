@@ -59,8 +59,16 @@ func NewLoginHandler(s *supabase.Client) *LoginHandler {
 }
 
 func NewRegisterHandler(s *supabase.Client) *RegisterHandler {
+
 	return &RegisterHandler{DBClient: s}
 }
+
+// func () NewLoginHandler() http.Handler {
+
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+// 	})
+// }
 
 func LoginUser(client *supabase.Client, w http.ResponseWriter, r *http.Request) {
 	var credentials Credentials

@@ -5,12 +5,23 @@ import (
 	"net/http"
 	"time"
 
+	"cloud.google.com/go/vertexai/genai"
 	"github.com/ocr/cmd/database"
 	"github.com/ocr/cmd/env"
 	"github.com/ocr/cmd/middleware"
 	"github.com/ocr/cmd/services/vertexai"
 	"github.com/rs/cors"
+	"github.com/supabase-community/supabase-go"
 )
+
+type Application struct {
+	DBClient       *supabase.Client
+	VertexAIClient *genai.Client
+}
+
+func Test() {
+
+}
 
 func main() {
 	if err := run(); err != nil {
@@ -18,8 +29,7 @@ func main() {
 	}
 }
 
-
-func run() error{
+func run() error {
 	if err := env.LoadEnvVariables(".env"); err != nil {
 		return err
 	}
