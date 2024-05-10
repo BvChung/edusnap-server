@@ -9,6 +9,7 @@ import (
 )
 
 func AccountsHandler(w http.ResponseWriter, r *http.Request) {
+
 	client, err := database.CreateSupabaseClient()
 
 	if err != nil {

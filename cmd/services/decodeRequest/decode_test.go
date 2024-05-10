@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/ocr/internal/models"
+	"github.com/ocr/cmd/models"
 )
 
 func TestDecodeReqBody(t *testing.T) {
